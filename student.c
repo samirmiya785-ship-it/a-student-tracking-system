@@ -19,29 +19,37 @@ void clear_buffer(void) {
     while ((c = getchar()) != '\n' && c != EOF);
 }
 
-void calculate_metrics(Student *s) {
+void calculate_metrics(Student *s)
+ {
     int i;
     int pts = 0;
-    for (i = 0; i < TOTAL_WEEKS; i++) {
+    for (i = 0; i < TOTAL_WEEKS; i++)
+     {
         if (s->attend[i] == 'P') pts++;
         if (s->hw[i] == 'S') pts++;
     }
     s->progress = ((float)pts / (TOTAL_WEEKS * 2)) * 100.0f;
 
-    if (s->progress >= 90.0f) strcpy(s->status, "Excellent");
-    else if (s->progress >= 70.0f) strcpy(s->status, "On Track");
-    else if (s->progress >= 50.0f) strcpy(s->status, "Needs Attention");
+    if (s->progress >= 90.0f)
+     strcpy(s->status, "Excellent");
+    else if (s->progress >= 70.0f)
+     strcpy(s->status, "On Track");
+    else if (s->progress >= 50.0f)
+     strcpy(s->status, "Needs Attention");
     else strcpy(s->status, "Critical");
 }
 
-void load_data(Student s[], int *count) {
+void load_data(Student s[], int *count)
+ {
     FILE *f = fopen("database.txt", "r");
     if (!f) return;
     char line[512];
-    while (*count < MAX_STUDENTS && fgets(line, sizeof(line), f)) {
+    while (*count < MAX_STUDENTS && fgets(line, sizeof(line), f))
+     {
         int id;
         char name[100], att[TOTAL_WEEKS + 1], hw[TOTAL_WEEKS + 1];
-        if (sscanf(line, "%d|%99[^|]|%24s|%24s", &id, name, att, hw) == 4) {
+        if (sscanf(line, "%d|%99[^|]|%24s|%24s", &id, name, att, hw) == 4)
+         {
             s[*count].id = id;
             snprintf(s[*count].name, sizeof(s[*count].name), "%s", name);
             snprintf(s[*count].attend, sizeof(s[*count].attend), "%s", att);
@@ -53,26 +61,30 @@ void load_data(Student s[], int *count) {
     fclose(f);
 }
 
-void save_data(Student s[], int count) {
+void save_data(Student s[], int count)
+ {
     int i;
     FILE *f = fopen("database.txt", "w");
     if (!f) {
         printf("Error opening database for writing.\n");
         return;
     }
-    for (i = 0; i < count; i++) {
+    for (i = 0; i < count; i++)
+     {
         fprintf(f, "%d|%s|%s|%s\n", s[i].id, s[i].name, s[i].attend, s[i].hw);
     }
     fclose(f);
     printf("Data saved successfully to database.txt!\n");
 }
 
-void view_dashboard(Student s[], int count) {
+void view_dashboard(Student s[], int count)
+ {
     int i, w;
     int exc = 0, on_tr = 0, needs_att = 0, crit = 0;
     float total_prog = 0.0f;
 
-    for (i = 0; i < count; i++) {
+    for (i = 0; i < count; i++)
+     {
         calculate_metrics(&s[i]);
         total_prog += s[i].progress;
         if (strcmp(s[i].status, "Excellent") == 0) exc++;
@@ -99,7 +111,8 @@ void view_dashboard(Student s[], int count) {
     printf("%-7s | %-10s | %-8s | %-8s | %-12s\n", "Week", "Completed", "Partial", "Pending", "Rate %");
     printf("---------------------------------------------------------\n");
     
-    for (w = 0; w < TOTAL_WEEKS; w++) {
+    for (w = 0; w < TOTAL_WEEKS; w++)
+     {
         int comp = 0, part = 0, pend = 0;
         for (i = 0; i < count; i++) {
             int p = (s[i].attend[w] == 'P');
@@ -124,38 +137,45 @@ void view_roster(Student s[], int count) {
     printf("%-4s | %-3s | %-16s | %-9s | %-16s | W1 W2 W3\n", "S.N.", "ID", "Student Name", "Progress", "Overall Status");
     printf("--------------------------------------------------------------------\n");
 
-    for (i = 0; i < count; i++) {
+    for (i = 0; i < count; i++)
+     {
         calculate_metrics(&s[i]);
-        printf("%-4d | %-3d | %-16s | %-7.1f%% | %-16s | ", 
-               i + 1, s[i].id, s[i].name, s[i].progress, s[i].status);
+        printf("%-4d | %-3d | %-16s | %-7.1f%% | %-16s | ", i + 1, s[i].id, s[i].name, s[i].progress, s[i].status);
         
-        for (w = 0; w < 3; w++) {
+        for (w = 0; w < 3; w++)
+         {
             char code = '-';
-            if (s[i].attend[w] == 'P' && s[i].hw[w] == 'S') code = 'C';
-            else if (s[i].attend[w] == 'P' || s[i].hw[w] == 'S') code = 'P';
+            if (s[i].attend[w] == 'P' && s[i].hw[w] == 'S')
+             code = 'C';
+            else if (s[i].attend[w] == 'P' || s[i].hw[w] == 'S') 
+            code = 'P';
             printf("%c  ", code);
         }
         printf("\n");
     }
 }
 
-void add_student(Student s[], int *count) {
+void add_student(Student s[], int *count)
+ {
     int i;
-    if (*count >= MAX_STUDENTS) {
+    if (*count >= MAX_STUDENTS)
+     {
         printf("Cannot add more.\n");
         return;
     }
     clear_buffer();
     printf("Enter Student Name: ");
     char name[100];
-    if (scanf("%99[^\n]", name) != 1) {
+    if (scanf("%99[^\n]", name) != 1)
+     {
         printf("Failed to read name.\n");
         return;
     }
 
     s[*count].id = *count + 1;
     snprintf(s[*count].name, sizeof(s[*count].name), "%s", name);
-    for (i = 0; i < TOTAL_WEEKS; i++) {
+    for (i = 0; i < TOTAL_WEEKS; i++)
+     {
         s[*count].attend[i] = '-';
         s[*count].hw[i] = '-';
     }
@@ -166,31 +186,36 @@ void add_student(Student s[], int *count) {
     printf("Student added successfully!\n");
 }
 
-void update_student(Student s[], int count) {
+void update_student(Student s[], int count)
+ {
     int i;
     int id, week;
     printf("Enter Student ID: ");
-    if (scanf("%d", &id) != 1) {
+    if (scanf("%d", &id) != 1)
+     {
         clear_buffer();
         printf("Invalid ID format.\n");
         return;
     }
 
     int idx = -1;
-    for (i = 0; i < count; i++) {
+    for (i = 0; i < count; i++)
+     {
         if (s[i].id == id) {
             idx = i;
             break;
         }
     }
 
-    if (idx == -1) {
+    if (idx == -1)
+     {
         printf("Student ID not found.\n");
         return;
     }
 
     printf("Enter Week Number (1-%d): ", TOTAL_WEEKS);
-    if (scanf("%d", &week) != 1 || week < 1 || week > TOTAL_WEEKS) {
+    if (scanf("%d", &week) != 1 || week < 1 || week > TOTAL_WEEKS)
+     {
         clear_buffer();
         printf("Invalid week range.\n");
         return;
@@ -205,7 +230,8 @@ void update_student(Student s[], int count) {
     att = (att >= 'a' && att <= 'z') ? att - 'a' + 'A' : att;
     hw = (hw >= 'a' && hw <= 'z') ? hw - 'a' + 'A' : hw;
 
-    if ((att != 'P' && att != 'A') || (hw != 'S' && hw != 'N')) {
+    if ((att != 'P' && att != 'A') || (hw != 'S' && hw != 'N'))
+     {
         printf("Invalid input. Use P or A for attendance, S or N for homework.\n");
         return;
     }
@@ -223,7 +249,8 @@ int main(void) {
     int choice;
 
     printf("Password (default: teacher): ");
-    if (scanf("%19s", pass) != 1 || strcmp(pass, "teacher") != 0) {
+    if (scanf("%19s", pass) != 1 || strcmp(pass, "teacher") != 0)
+     {
         printf("Password incorrect.\n");
         return 0;
     }
@@ -246,17 +273,27 @@ int main(void) {
         printf("\n=========================================================\n");
         printf("Choice: ");
 
-        if (scanf("%d", &choice) != 1) {
+        if (scanf("%d", &choice) != 1)
+         {
             clear_buffer();
             choice = 0;
             continue;
         }
 
-        if (choice == 1) view_dashboard(s, count);
-        else if (choice == 2) view_roster(s, count);
-        else if (choice == 3) add_student(s, &count);
-        else if (choice == 4) update_student(s, count);
-        else if (choice == 5) {
+        if (choice == 1)
+         view_dashboard(s, count);
+        else if
+         (choice == 2) 
+         view_roster(s, count);
+        else if 
+        (choice == 3)
+         add_student(s, &count);
+        else if 
+        (choice == 4)
+        update_student(s, count);
+        else if 
+        (choice == 5)
+         {
             save_data(s, count);
             break;
         }
